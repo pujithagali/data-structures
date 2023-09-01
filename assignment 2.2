@@ -1,0 +1,232 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+
+struct polynomial
+{
+	int coeff;
+	int power;
+	struct polynomial *next;
+};
+
+
+typedef struct polynomial NODE;
+
+
+
+NODE* insertTerms(NODE *poly,int cof,int pow)
+{
+	if(poly==NULL)
+	{
+		poly=(NODE*)malloc(sizeof(NODE));
+		poly->coeff=cof;
+		poly->power=pow;
+		poly->next=NULL;
+	}
+	else
+	{
+		NODE *temp;
+		temp=poly;
+		while(temp->next!=NULL)
+		{
+			temp=temp->next;
+		}
+		temp->next=(NODE*)malloc(sizeof(NODE));
+		temp=temp->next;
+		temp->coeff=cof;
+		temp->power=pow;
+		temp->next=NULL;
+	}
+	return poly;
+}
+
+NODE* addPoly(NODE *pol1,NODE *pol2)
+{
+	NODE *res=NULL;
+	NODE *temp;
+	while(pol1!=NULL && pol2!=NULL)
+	{
+		if(pol1->power==pol2->power)
+		{
+			if(res==NULL)
+			{
+				res=(NODE*)malloc(sizeof(NODE));
+				temp=res;
+				temp->coeff=pol1->coeff+pol2->coeff;
+				temp->power=pol1->power;
+				temp->next=NULL;
+			}
+			else
+			{
+				temp->next=(NODE*)malloc(sizeof(NODE));
+				temp=temp->next;
+				temp->coeff=pol1->coeff+pol2->coeff;
+				temp->power=pol1->power;
+				temp->next=NULL;
+			}
+			pol1=pol1->next;
+			pol2=pol2->next;
+		}
+		else if(pol1->power > pol2->power)
+		{
+			if(res==NULL)
+			{
+				res=(NODE*)malloc(sizeof(NODE));
+				temp=res;
+				temp->coeff=pol1->coeff;
+				temp->power=pol1->power;
+				temp->next=NULL;
+			}
+			else
+			{
+				temp->next=(NODE*)malloc(sizeof(NODE));
+				temp=temp->next;
+				temp->coeff=pol1->coeff;
+				temp->power=pol1->power;
+				temp->next=NULL;
+			}
+			pol1=pol1->next;
+		}
+		else
+		{
+			if(res==NULL)
+			{
+				res=(NODE*)malloc(sizeof(NODE));
+				temp=res;
+				temp->coeff=pol2->coeff;
+				temp->power=pol2->power;
+				temp->next=NULL;
+			}
+			else
+			{
+				temp->next=(NODE*)malloc(sizeof(NODE));
+				temp=temp->next;
+				temp->coeff=pol2->coeff;
+				temp->power=pol2->power;
+				temp->next=NULL;
+			}
+			pol2=pol2->next;
+		}
+	}
+	return res;
+}
+
+NODE *addToResult(NODE *res,int cof,int pow)
+{
+	NODE *temp;
+	NODE *temp2;
+	if(res==NULL)
+	{
+		res=(NODE *)malloc(sizeof(NODE));
+		res->coeff=cof;
+		res->power=pow;
+		res->next=NULL;
+	}
+	else
+	{
+		temp=res;
+		while(temp->power > pow)
+		{
+
+			temp2=temp;
+			temp=temp->next;
+			if(temp==NULL)
+			{
+				break;
+			}
+		}
+		if(temp==NULL)
+		{
+			temp2->next=(NODE*)malloc(sizeof(NODE));
+			temp2=temp2->next;
+			temp2->coeff=cof;
+			temp2->power=pow;
+			temp2->next=NULL;
+		}
+		else if(temp->power==pow)
+		{
+			temp->coeff=temp->coeff + cof;
+		}
+		else
+		{
+			temp2->next=(NODE*)malloc(sizeof(NODE));
+			temp2=temp2->next;
+			temp2->coeff=cof;
+			temp2->power=pow;
+			temp2->next=temp;
+		}
+	}
+	return res;
+}
+
+
+NODE *multiplyPoly(NODE *poly1,NODE *poly2)
+{
+	int cof,pow;
+	NODE *temp;
+	NODE *res=NULL;
+	while(poly1!=NULL)
+	{
+		temp=poly2;
+		while(temp!=NULL)
+		{
+			cof=poly1->coeff * temp->coeff;
+			pow=poly1->power + temp->power;
+			res=addToResult(res,cof,pow);
+			temp=temp->next;
+		}
+		poly1=poly1->next;
+	}
+	return res;
+}
+
+
+void displayPoly(NODE *poly)
+{
+	NODE *temp;
+	if(poly==NULL)
+	{
+		printf("\nEmpty!");
+	}
+	else
+	{
+		temp=poly;
+		while(temp!=NULL)
+		{
+			printf("%dx^%d",temp->coeff,temp->power);
+			if(temp->next!=NULL)
+			{
+				printf("+");
+			}
+			temp=temp->next;
+		}
+	}
+}
+
+int main()
+{
+
+	NODE *poly1=NULL;
+	NODE *poly2=NULL;
+	NODE *res=NULL;
+	int i,n,cof,power;
+	poly1=insertTerms(poly1,4,2);
+	poly1=insertTerms(poly1,3,1);
+	poly1=insertTerms(poly1,6,0);
+	poly2=insertTerms(poly2,2,2);
+	poly2=insertTerms(poly2,3,0);
+	printf("\nPolynomial 1: ");
+	displayPoly(poly1);
+	printf("\nPolynomial 2: ");
+	displayPoly(poly2);
+//	res=addPoly(poly1,poly2);
+//	printf("\nResult: ");
+//	displayPoly(res);
+//	res=NULL;
+//	res=addToResult(res,3,2);
+//	res=addToResult(res,2,1);
+	res=multiplyPoly(poly1,poly2);
+	printf("\nMultiplication: ");
+	displayPoly(res);
+	return 0;
+}
