@@ -1,0 +1,108 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node* next;
+};
+
+void insertAtBeginning(struct Node** head, int digit) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    if (!newNode) {
+        perror("Memory allocation failed");
+        exit(EXIT_FAILURE);
+    }
+    newNode->data = digit;
+    newNode->next = *head;
+    *head = newNode;
+}
+
+struct Node* addLists(struct Node* list1, struct Node* list2) {
+    struct Node* result = NULL;
+    struct Node* prev = NULL;
+    int carry = 0;
+
+    while (list1 || list2) {
+        int sum = carry + (list1 ? list1->data : 0) + (list2 ? list2->data : 0);
+        carry = sum / 10;
+        sum %= 10;
+
+        struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+        if (!newNode) {
+            perror("Memory allocation failed");
+            exit(EXIT_FAILURE);
+        }
+        newNode->data = sum;
+        newNode->next = NULL;
+
+        if (!result)
+            result = newNode;
+        else
+            prev->next = newNode;
+
+        prev = newNode;
+
+        if (list1)
+            list1 = list1->next;
+        if (list2)
+            list2 = list2->next;
+    }
+
+    if (carry > 0) {
+        struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+        if (!newNode) {
+            perror("Memory allocation failed");
+            exit(EXIT_FAILURE);
+        }
+        newNode->data = carry;
+        newNode->next = NULL;
+        prev->next = newNode;
+    }
+
+    return result;
+}
+
+void printList(struct Node* head) {
+    while (head) {
+        printf("%d", head->data);
+        head = head->next;
+    }
+    printf("\n");
+}
+
+void freeList(struct Node* head) {
+    while (head) {
+        struct Node* temp = head;
+        head = head->next;
+        free(temp);
+    }
+}
+
+int main() {
+    struct Node* num1 = NULL;
+    struct Node* num2 = NULL;
+
+    insertAtBeginning(&num1, 5);
+    insertAtBeginning(&num1, 4);
+    insertAtBeginning(&num1, 3);
+
+    insertAtBeginning(&num2, 9);
+    insertAtBeginning(&num2, 8);
+
+    struct Node* sum = addLists(num1, num2);
+
+    printf("Number 1: ");
+    printList(num1);
+
+    printf("Number 2: ");
+    printList(num2);
+
+    printf("Sum: ");
+    printList(sum);
+
+    freeList(num1);
+    freeList(num2);
+    freeList(sum);
+
+    return 0;
+}
