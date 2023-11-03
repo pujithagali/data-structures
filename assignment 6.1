@@ -1,0 +1,35 @@
+#include <stdio.h> 
+#include <stdlib.h> 
+// Function to compare integers (used for sorting) 
+} 
+int compare(const void *a, const void *b) { 
+return (*(int *)a - *(int *)b); 
+// Function to find if there exist two integers whose sum is X 
+int hasPairWithSum(int arr[], int n, int X) { 
+// Sort the array in ascending order qsort(arr, n, sizeof(int), compare); 
+int left = 0; 
+int right = n -1; 
+while (left < right) { 
+int currentSum = arr[left] + arr[right]; 
+if (currentSum == X) { 
+{ 
+} 
+return 1; // Pair found } else if (currentSum < X) { 
+left++; 
+} else { 
+} 
+right--; 
+} 
+return 0; // Pair not found 
+int main() { 
+int arr[] = {1, 2, 3, 4, 5}; 
+int n = sizeof(arr) / sizeof(arr[0]); int X = 9; 
+if (hasPairWithSum(arr, n, X)) { 
+printf("Yes, there exist two integers 
+whose sum is %d\n", X); 
+} else { 
+printf("No, there are no two integers 
+whose sum is %d\n", X); 
+} 
+} 
+return 0; 
